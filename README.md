@@ -2,6 +2,7 @@ gegl:polygons
 =========
 
 A custom GEGL operation (and by extension GIMP filter) renders a basic pencil drawing
+![image preview](polygon_preview.png)
 
 ## OS specific location to put GEGL Filter binaries 
 
