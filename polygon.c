@@ -144,7 +144,7 @@ gegl_op_class_init (GeglOpClass *klass)
     "title",       _("Polygon Generator"),
     "categories",  "Aristic",
     "reference-hash", "3p6j6bf40dd50f2345sf27ac",
-    "description", _("Generator simple polygonal backgrounds with GEGL   "
+    "description", _("Generate simple polygonal backgrounds with GEGL   "
                      ""),
     NULL);
 }
