@@ -54,5 +54,9 @@ meson setup --buildtype=release build
 ninja -C build
 ```
 
+## Extra preview of this based plugin
+
+![image preview](polygon_preview3.png)
+
 
 
