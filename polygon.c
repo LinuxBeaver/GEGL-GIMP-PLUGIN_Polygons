@@ -17,6 +17,19 @@
  * GEGL polygon, 2022 Beaver 
  */
 
+/* 
+GEGL Graph of Polygons to test without installing.
+
+id=0
+over aux=[ ref=0
+cell-noise scale=0.10 rank=2
+emboss azimuth=44 elevation=44 depth=19
+rgb-clip
+id=1
+multiply aux=[ ref=1 color-overlay value=#61aded    ]   ]
+crop
+ */
+
 #include "config.h"
 #include <glib/gi18n-lib.h>
 
@@ -24,13 +37,7 @@
 
 property_double  (scale, _("Scale of Polygons"), 0.10)
     description  (_("The scale of the noise function"))
-    value_range  (0.05, 0.19)
-
-
-property_int     (rank, _("Rank of Polygons"), 2)
-    description  (_("Select the n-th closest point"))
-    value_range  (2, 3)
-    ui_meta     ("role", "output-extent")
+    value_range  (0.05, 0.25)
 
 property_seed    (seed, _("Random seed"), rand)
     description  (_("The random seed for the noise function"))
@@ -41,26 +48,12 @@ property_double (azimuth, _("Light Rotation"), 2.0)
     ui_meta ("unit", "degree")
     ui_meta ("direction", "ccw")
 
-property_int (depth, _("Depth of Polygons"), 20)
+property_int (depth, _("Depth of Polygons"), 30)
     description (_("Filter width"))
-    value_range (6, 30)
+    value_range (6, 50)
 
-property_color (value, _("Color"), "transparent")
+property_color (value, _("Color"), "Red")
     description (_("The color to paint over the input"))
-    ui_meta     ("role", "color-primary")
-
-property_double (std_dev, _("Radius of Sharpen"), 2.5)
-    description(_("Expressed as standard deviation, in pixels"))
-    value_range (2.5, 7.0)
-    ui_range    (2.5, 7.0)
-    ui_gamma    (3.0)
-    ui_meta     ("unit", "pixel-distance")
-
-property_double (strength, _("Scaling Factor of Sharpen"), 1)
-    description(_("Scaling factor for unsharp-mask, the strength of effect"))
-    value_range (0.0, 5.0)
-    ui_range    (0.0, 5.0)
-    ui_gamma    (3.0)
 
 
 #else
@@ -74,38 +67,42 @@ property_double (strength, _("Scaling Factor of Sharpen"), 1)
 static void attach (GeglOperation *operation)
 {
   GeglNode *gegl = operation->node;
-  GeglNode *input, *output, *over, *cellnoise, *emboss, *multiply, *color, *crop, *sharpen;
+  GeglNode *input, *output, *cellnoise, *emboss, *multiply, *over, *crop, *rgbclip, *color;
 
   input    = gegl_node_get_input_proxy (gegl, "input");
   output   = gegl_node_get_output_proxy (gegl, "output");
 
 
-  over = gegl_node_new_child (gegl,
-                                  "operation", "gegl:over",
-                                  NULL);
 
-  cellnoise = gegl_node_new_child (gegl,
-                                  "operation", "gegl:cell-noise",
-                                  NULL);
+  cellnoise      = gegl_node_new_child (gegl, "operation", "gegl:cell-noise",
+                                         "rank", 2,
+                                         NULL);
 
   emboss = gegl_node_new_child (gegl,
                                   "operation", "gegl:emboss",
                                   NULL);
 
-multiply = gegl_node_new_child (gegl,
-                                    "operation", "gimp:layer-mode", "layer-mode", 30, NULL);
+  multiply = gegl_node_new_child (gegl,
+                                  "operation", "gegl:multiply",
+                                  NULL);
 
   color = gegl_node_new_child (gegl,
-                                  "operation", "gegl:color",
+                                  "operation", "gegl:color-overlay",
+                                  NULL);
+
+  over = gegl_node_new_child (gegl,
+                                  "operation", "gegl:over",
+                                  NULL);
+
+     
+ rgbclip = gegl_node_new_child (gegl,
+                                  "operation", "gegl:rgb-clip",
                                   NULL);
 
   crop = gegl_node_new_child (gegl,
                                   "operation", "gegl:crop",
                                   NULL);
 
-  sharpen = gegl_node_new_child (gegl,
-                                  "operation", "gegl:unsharp-mask",
-                                  NULL);
 
 
   gegl_operation_meta_redirect (operation, "scale", cellnoise, "scale");
@@ -114,18 +111,12 @@ multiply = gegl_node_new_child (gegl,
   gegl_operation_meta_redirect (operation, "depth", emboss, "depth");
   gegl_operation_meta_redirect (operation, "azimuth", emboss, "azimuth");
   gegl_operation_meta_redirect (operation, "value", color, "value");
-  gegl_operation_meta_redirect (operation, "std_dev", sharpen, "std-dev");
-  gegl_operation_meta_redirect (operation, "strength", sharpen, "scale");
 
-
-
-
-  gegl_node_link_many (input, over, emboss, crop, sharpen, multiply, output, NULL);
+  gegl_node_link_many (input, over, emboss, rgbclip, multiply, crop, output, NULL);
   gegl_node_connect_from (over, "aux", cellnoise, "output");
   gegl_node_link_many (input, cellnoise, NULL);
   gegl_node_connect_from (multiply, "aux", color, "output");
   gegl_node_link_many (input, color, NULL);
-
 
 
 }
@@ -144,10 +135,9 @@ gegl_op_class_init (GeglOpClass *klass)
     "title",       _("Polygon Generator"),
     "categories",  "Aristic",
     "reference-hash", "3p6j6bf40dd50f2345sf27ac",
-    "description", _("Generate simple polygonal backgrounds with GEGL   "
+    "description", _("Generator simple polygonal backgrounds with GEGL   "
                      ""),
     NULL);
 }
 
 #endif
-
