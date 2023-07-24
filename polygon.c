@@ -136,6 +136,8 @@ gegl_op_class_init (GeglOpClass *klass)
     "reference-hash", "3p6j6bf40dd50f2345sf27ac",
     "description", _("Generator simple polygonal backgrounds with GEGL   "
                      ""),
+    "gimp:menu-path", "<Image>/Filters/Render/Fun",
+    "gimp:menu-label", _("Polygons..."),
     NULL);
 }
 
