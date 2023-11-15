@@ -106,7 +106,6 @@ static void attach (GeglOperation *operation)
 
 
   gegl_operation_meta_redirect (operation, "scale", cellnoise, "scale");
-  gegl_operation_meta_redirect (operation, "rank", cellnoise, "rank");
   gegl_operation_meta_redirect (operation, "seed", cellnoise, "seed");
   gegl_operation_meta_redirect (operation, "depth", emboss, "depth");
   gegl_operation_meta_redirect (operation, "azimuth", emboss, "azimuth");
@@ -130,9 +129,8 @@ gegl_op_class_init (GeglOpClass *klass)
   operation_class->attach = attach;
 
   gegl_operation_class_set_keys (operation_class,
-    "name",        "gegl:polygons",
+    "name",        "lb:polygons",
     "title",       _("Polygon Generator"),
-    "categories",  "Aristic",
     "reference-hash", "3p6j6bf40dd50f2345sf27ac",
     "description", _("Generator simple polygonal backgrounds with GEGL   "
                      ""),
