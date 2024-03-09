@@ -112,8 +112,8 @@ static void attach (GeglOperation *operation)
   gegl_operation_meta_redirect (operation, "value", color, "value");
 
   gegl_node_link_many (input, over, emboss, rgbclip, multiply, crop, output, NULL);
-  gegl_node_connect_from (over, "aux", cellnoise, "output");
-  gegl_node_connect_from (multiply, "aux", color, "output");
+  gegl_node_connect (over, "aux", cellnoise, "output");
+  gegl_node_connect (multiply, "aux", color, "output");
   gegl_node_link_many (input, color, NULL);
 
 
