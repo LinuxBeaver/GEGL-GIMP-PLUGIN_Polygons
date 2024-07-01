@@ -100,7 +100,7 @@ static void attach (GeglOperation *operation)
                                   NULL);
 
   crop = gegl_node_new_child (gegl,
-                                  "operation", "gegl:crop",
+                                  "operation", "gegl:nop",
                                   NULL);
 
 
@@ -114,6 +114,7 @@ static void attach (GeglOperation *operation)
   gegl_node_link_many (input, over, emboss, rgbclip, multiply, crop, output, NULL);
   gegl_node_connect (over, "aux", cellnoise, "output");
   gegl_node_connect (multiply, "aux", color, "output");
+
   gegl_node_link_many (input, color, NULL);
 
 
